@@ -1,0 +1,43 @@
+$primary: #466aab;
+$header-bg: #dedede;
+
+html,
+body.app {
+    min-height: 100vh;
+}
+
+header {
+    background: $header-bg;
+}
+.main-content {
+    padding-top: 40px;
+}
+.page-title {
+    font-size: 30px;
+    margin: 0 0 40px 0;
+}
+.btn-primary {
+    background: $primary;
+}
+
+/* Projects */
+.project {
+    h3 {
+        margin: 0;
+    }
+    label {
+       font-weight: 600;
+        &:after {
+            content: ':';
+        }
+    }
+    .progress-value {
+        font-size: 13px;
+        font-weight: 600;
+        display: block;
+        //text-align: right;
+    }
+    .update {
+        margin-top: 10px;
+    }
+}
