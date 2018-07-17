@@ -70,7 +70,7 @@
                         <div class="card">
                             <div class="card-header map-toolbar">
                                 <button class="btn btn-primary btn-add float-right" id="btnRoute">Draw Route</button>
-                                <button class="btn btn-primary btn-add float-right">Add New</button>
+                                <button class="btn btn-primary btn-add float-right" id="btnAddSegment">Add New</button>
                             </div>
                             <div class="card-body">
                                 <div id="map"></div>
@@ -124,7 +124,21 @@
 
                         </div>
                     </div>
-                    <div class="col-md-5"></div>
+                    <div class="col-md-5">
+                        <table id="tbl-segments" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Segment</th>
+                                    <th>Origin</th>
+                                    <th>Destination</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    
+                    </div>
                 </div>
             </section>
         </div>
@@ -138,62 +152,68 @@
     <script type="text/javascript" src="libs/gmaps/gmaps.js"></script>
     <script type="text/javascript">
         var map;
-        var origin = null, destin = null, segment = false;
+        var origin = null,
+            destin = null,
+            segment = 2;
+        var segmentIndex = 0;
         $(document).ready(function() {
             map = new GMaps({
                 el: '#map',
                 lat: -12.043333,
                 lng: -77.028333
             });
-            map.setContextMenu({
-                control: 'map',
-                options: [{
-                    title: 'Add marker',
-                    name: 'add_marker',
-                    action: function(e) {
-                        if (segment === false) {
-                            if(origin === null && destin === null) {
-                                $("#ori-lat").val(e.latLng.lat());
-                                $("#ori-lon").val(e.latLng.lng());
-                                origin = [e.latLng.lat(), e.latLng.lng()];
-                                alert(origin);
-                                this.addMarker({
-                                    lat: e.latLng.lat(),
-                                    lng: e.latLng.lng(),
-                                    title: 'Origin'
-                                });
-                            }
-                            else if(origin != null && destin === null) {
-                                $("#des-lat").val(e.latLng.lat());
-                                $("#des-lon").val(e.latLng.lng());
-                                destin = [e.latLng.lat(), e.latLng.lng()];
-                                this.addMarker({
-                                    lat: e.latLng.lat(),
-                                    lng: e.latLng.lng(),
-                                    title: 'Destination'
-                                });
-                                segment = true;
-                            }
-                            
-                        }
-                        else {
-                            return false;
-                        }
+
+            GMaps.on('click', map.map, function(event) {
+                var index = map.markers.length;
+                var lat = event.latLng.lat();
+                var lng = event.latLng.lng();
+
+                if (segment < 2) {
+                    console.log(segment);
+                    if (origin === null && destin === null && segment < 1) {
                         
+                        $("#ori-lat").val(lat);
+                        $("#ori-lon").val(lng);
+                        origin = [lat, lng];
+                        // alert(origin);
+                        segment = 1;
+                        map.addMarker({
+                            lat: lat,
+                            lng: lng,
+                            title: 'Origin'
+                        });
+                        map.drawOverlay({
+                          lat: lat,
+                          lng: lng,
+                          content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                        });
+                    } else if (origin != null && destin === null && segment == 1) {
+                        $("#des-lat").val(lat);
+                        $("#des-lon").val(lng);
+                        destin = [lat, lng];
+                        map.addMarker({
+                            lat: lat,
+                            lng: lng,
+                            title: 'Destination'
+                        });
+                        map.drawOverlay({
+                          lat: lat,
+                          lng: lng,
+                          content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                        });
+                        console.log("Segment -- " + origin + "---" + destin);
+                        var formatOrigin = origin.join(', ');
+                        var formatDestin = destin.join(', ');
+                        $("#tbl-segments tbody").append("<tr class='table-active'><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
                         
-                        console.log(e.latLng.lat());
-                        console.log(e.latLng.lng());
-                        
-                        this.hideContextMenu();
+                        $("#btnAddSegment").removeAttr('disabled');
                     }
-                }, {
-                    title: 'Center here',
-                    name: 'center_here',
-                    action: function(e) {
-                        this.setCenter(e.latLng.lat(), e.latLng.lng());
-                    }
-                }]
+
+                }
+
             });
+
+           
             map.setContextMenu({
                 control: 'marker',
                 options: [{
@@ -205,27 +225,28 @@
                 }]
             });
 
-            //        map.drawRoute({
-            //          origin: [-12.044012922866312, -77.02470665341184],
-            //          destination: [-12.090814532191756, -77.02271108990476],
-            //          travelMode: 'driving',
-            //          strokeColor: '#131540',
-            //          strokeOpacity: 0.6,
-            //          strokeWeight: 6
-            //        });
-            
-            $("#btnRoute").click(function (){
+            $("#btnAddSegment").click(function() {
+                segmentIndex++;
+                segment = 0;
+                origin = null;
+                destin = null;
+                map.removeMarkers();
+                map.removeOverlays();
+                $("#tbl-segments tr.table-active").removeClass("table-active");
+                 $("#btnAddSegment").attr("disabled", "disabled");
+            });
+
+            $("#btnRoute").click(function() {
                 map.drawRoute({
-                  origin: origin,
-                  destination: destin,
-                  travelMode: 'driving',
-                  strokeColor: '#ff0000',
-                  strokeOpacity: 0.6,
-                  strokeWeight: 6
+                    origin: origin,
+                    destination: destin,
+                    travelMode: 'driving',
+                    strokeColor: '#ff0000',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 6
                 });
             });
         });
-        
 
     </script>
 </body>
