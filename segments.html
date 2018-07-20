@@ -14,44 +14,27 @@
     <header>
         <div class="container">
             <nav class="navbar navbar-expand-lg">
-                <a class="navbar-brand" href="#">M-Trada</a>
+                <a class="navbar-brand" href="#">
+                    <img src="img/logo.png" />
+                    M-Trada
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Dropdown
-                </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#">Disabled</a>
-                        </li>
-                    </ul>
                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Projects</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Username
-                </a>
+                              Username
+                            </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
+                                <a class="dropdown-item" href="#">My Profile</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -69,11 +52,18 @@
                     <div class="col-md-7">
                         <div class="card">
                             <div class="card-header map-toolbar">
-                                <button class="btn btn-primary btn-add float-right" id="btnRoute">Draw Route</button>
-                                <button class="btn btn-primary btn-add float-right" id="btnAddSegment">Add New</button>
+                                <button class="btn btn-add btn-secondary btn-add" id="btnAddSegment"><i class="fa fa-plus"></i>Add New</button>
+                                <div class="secondary-actions float-right" style="display: none">
+                                <button class="btn btn-primary btn-add" id="btnSaveSegment" disabled="disabled">Save</button>
+                                
+                                <button class="btn btn-cancel btn-add" id="btnCancelSegment">Cancel</button>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div id="map"></div>
+                            <div class="">
+                                <div class="wr-map no-action">
+                                    <div id="map"></div>
+                                </div>
+<!--
                                 <div class="form-group">
 
                                     <label class="control-label">Origin</label>
@@ -120,6 +110,7 @@
                                         </div>
                                     </div>
                                 </div>
+-->
                             </div>
 
                         </div>
@@ -134,7 +125,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+                                <tr class="placeholder">
+                                    <td colspan="3">
+                                        No segments defined
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     
@@ -144,6 +139,11 @@
         </div>
     </div>
 
+    <footer>
+        <div class="container">
+            <p>&copy; UOW 2018</p>
+        </div>
+    </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
@@ -159,8 +159,8 @@
         $(document).ready(function() {
             map = new GMaps({
                 el: '#map',
-                lat: -12.043333,
-                lng: -77.028333
+                lat: 6.9271,
+                lng: 79.8612
             });
 
             GMaps.on('click', map.map, function(event) {
@@ -175,7 +175,7 @@
                         $("#ori-lat").val(lat);
                         $("#ori-lon").val(lng);
                         origin = [lat, lng];
-                        // alert(origin);
+                        
                         segment = 1;
                         map.addMarker({
                             lat: lat,
@@ -201,12 +201,17 @@
                           lng: lng,
                           content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
+                        map.drawRoute({
+                            origin: origin,
+                            destination: destin,
+                            travelMode: 'driving',
+                            strokeColor: '#f0ab17',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 4
+                        });
+                        $("#btnSaveSegment").removeAttr('disabled');
                         console.log("Segment -- " + origin + "---" + destin);
-                        var formatOrigin = origin.join(', ');
-                        var formatDestin = destin.join(', ');
-                        $("#tbl-segments tbody").append("<tr class='table-active'><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
                         
-                        $("#btnAddSegment").removeAttr('disabled');
                     }
 
                 }
@@ -230,21 +235,38 @@
                 segment = 0;
                 origin = null;
                 destin = null;
-                map.removeMarkers();
-                map.removeOverlays();
+                
+                $(".secondary-actions").show();
+                $(".wr-map.no-action").removeClass("no-action");
                 $("#tbl-segments tr.table-active").removeClass("table-active");
                  $("#btnAddSegment").attr("disabled", "disabled");
             });
 
-            $("#btnRoute").click(function() {
-                map.drawRoute({
-                    origin: origin,
-                    destination: destin,
-                    travelMode: 'driving',
-                    strokeColor: '#ff0000',
-                    strokeOpacity: 0.6,
-                    strokeWeight: 6
-                });
+            $("#btnSaveSegment").click(function() {
+               var formatOrigin = origin.join(', ');
+                var formatDestin = destin.join(', ');
+                if ( $("#tbl-segments tbody tr.placeholder").length ) {
+                    $("#tbl-segments tbody tr.placeholder").remove();
+                }
+                $("#tbl-segments tbody").append("<tr><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
+                $("#btnSaveSegment").attr("disabled", "disabled");
+                $(".wr-map").addClass("no-action");
+                $(".secondary-actions").hide();
+                map.removeMarkers();
+                map.removeOverlays();
+                map.cleanRoute();
+                $("#btnAddSegment").removeAttr('disabled');
+            });
+            
+            
+            $("#btnCancelSegment").click(function() {
+                $(".wr-map").addClass("no-action");
+                $(".secondary-actions").hide();
+                segmentIndex--;
+                map.removeMarkers();
+                map.removeOverlays();
+                map.cleanRoute();
+                $("#btnAddSegment").removeAttr('disabled');
             });
         });
 
