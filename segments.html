@@ -15,8 +15,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="#">
-                    <img src="img/logo.png" />
-                    M-Trada
+                    <img src="img/logo.png" /> M-Trada
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -54,69 +53,22 @@
                             <div class="card-header map-toolbar">
                                 <button class="btn btn-add btn-secondary btn-add" id="btnAddSegment"><i class="fa fa-plus"></i>Add New</button>
                                 <div class="secondary-actions float-right" style="display: none">
-                                <button class="btn btn-primary btn-add" id="btnSaveSegment" disabled="disabled">Save</button>
-                                
-                                <button class="btn btn-cancel btn-add" id="btnCancelSegment">Cancel</button>
+                                    <button class="btn btn-primary btn-add" id="btnSaveSegment" disabled="disabled">Save</button>
+
+                                    <button class="btn btn-cancel btn-add" id="btnCancelSegment">Cancel</button>
                                 </div>
                             </div>
                             <div class="">
                                 <div class="wr-map no-action">
                                     <div id="map"></div>
                                 </div>
-<!--
-                                <div class="form-group">
 
-                                    <label class="control-label">Origin</label>
-                                    <div class="row">
-
-                                        <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Longitude</span>
-                                                </div>
-                                                <input type="text" class="form-control" id="ori-lon">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Latitude</span>
-                                                </div>
-                                                <input type="text" class="form-control" id="ori-lat">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-
-                                    <label class="control-label">Destination</label>
-                                    <div class="row">
-
-                                        <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Longitude</span>
-                                                </div>
-                                                <input type="text" class="form-control" id="des-lon">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Latitude</span>
-                                                </div>
-                                                <input type="text" class="form-control" id="des-lat">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
--->
                             </div>
 
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <table id="tbl-segments" class="table table-bordered">
+                        <table id="tbl-segments" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Segment</th>
@@ -132,7 +84,14 @@
                                 </tr>
                             </tbody>
                         </table>
-                    
+                        <div id="contextmenu" class="fade">
+                            <a id="edit">Edit</a>
+                            <a id="delete">Delete</a>
+                            <a href="">Add point from Origin</a>
+                            <a href="">Add point from Destination</a>
+                            <a href="">Duplicate</a>
+                            <a href="">Duplicate and invert OD</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -144,6 +103,9 @@
             <p>&copy; UOW 2018</p>
         </div>
     </footer>
+
+
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
@@ -171,11 +133,11 @@
                 if (segment < 2) {
                     console.log(segment);
                     if (origin === null && destin === null && segment < 1) {
-                        
+
                         $("#ori-lat").val(lat);
                         $("#ori-lon").val(lng);
                         origin = [lat, lng];
-                        
+
                         segment = 1;
                         map.addMarker({
                             lat: lat,
@@ -183,9 +145,9 @@
                             title: 'Origin'
                         });
                         map.drawOverlay({
-                          lat: lat,
-                          lng: lng,
-                          content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                            lat: lat,
+                            lng: lng,
+                            content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
                     } else if (origin != null && destin === null && segment == 1) {
                         $("#des-lat").val(lat);
@@ -197,9 +159,9 @@
                             title: 'Destination'
                         });
                         map.drawOverlay({
-                          lat: lat,
-                          lng: lng,
-                          content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                            lat: lat,
+                            lng: lng,
+                            content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
                         map.drawRoute({
                             origin: origin,
@@ -211,14 +173,14 @@
                         });
                         $("#btnSaveSegment").removeAttr('disabled');
                         console.log("Segment -- " + origin + "---" + destin);
-                        
+
                     }
 
                 }
 
             });
 
-           
+
             map.setContextMenu({
                 control: 'marker',
                 options: [{
@@ -235,17 +197,17 @@
                 segment = 0;
                 origin = null;
                 destin = null;
-                
+
                 $(".secondary-actions").show();
                 $(".wr-map.no-action").removeClass("no-action");
                 $("#tbl-segments tr.table-active").removeClass("table-active");
-                 $("#btnAddSegment").attr("disabled", "disabled");
+                $("#btnAddSegment").attr("disabled", "disabled");
             });
 
             $("#btnSaveSegment").click(function() {
-               var formatOrigin = origin.join(', ');
+                var formatOrigin = origin.join(', ');
                 var formatDestin = destin.join(', ');
-                if ( $("#tbl-segments tbody tr.placeholder").length ) {
+                if ($("#tbl-segments tbody tr.placeholder").length) {
                     $("#tbl-segments tbody tr.placeholder").remove();
                 }
                 $("#tbl-segments tbody").append("<tr><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
@@ -257,8 +219,8 @@
                 map.cleanRoute();
                 $("#btnAddSegment").removeAttr('disabled');
             });
-            
-            
+
+
             $("#btnCancelSegment").click(function() {
                 $(".wr-map").addClass("no-action");
                 $(".secondary-actions").hide();
@@ -268,6 +230,39 @@
                 map.cleanRoute();
                 $("#btnAddSegment").removeAttr('disabled');
             });
+        });
+
+var currentRow;
+
+        $(document).ready(function() {
+
+
+              $('#contextmenu a#delete').on('click',function(e) {
+                currentRow.remove();
+              });
+
+            $(document).on("contextmenu", "#tbl-segments tr", function(e) {
+                currentRow = $(this);
+                console.log(currentRow);
+                var delay = 0;
+                if ($('#contextmenu').hasClass('show')) delay = 100;
+                e.preventDefault();
+                $('#contextmenu').removeClass('show');
+                // $('#contextmenu').addClass('');
+
+                setTimeout(function() {
+                    $('#contextmenu').css('top', e.clientY);
+                    $('#contextmenu').css('left', e.clientX);
+                    // $('#contextmenu').removeClass('is-fadingOut');
+                    $('#contextmenu').addClass('show');
+                }, delay);
+
+            });
+
+            $(document).on("click", function(e) {
+                $('#contextmenu').removeClass('show');
+            });
+
         });
 
     </script>
