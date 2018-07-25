@@ -253,7 +253,11 @@
             
             $('#contextmenu a#edit').on('click',function(e) {
                 var $tds = currentRow.find("td");
-                var editRow = '';
+                var editRow = {
+                    ind: '',
+                    lat: '',
+                    long: ''
+                };
                 $.each($tds, function() {
                     
                     editRow += $(this).text() + "---";
