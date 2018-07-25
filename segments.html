@@ -117,6 +117,8 @@
         var origin = null,
             destin = null,
             segment = 2;
+        var tblRowCount = 0;
+        var currentRow;
         var segmentIndex = 0;
         $(document).ready(function() {
             map = new GMaps({
@@ -149,6 +151,7 @@
                             lng: lng,
                             content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
+                        map.setCenter(lat, lng);
                     } else if (origin != null && destin === null && segment == 1) {
                         $("#des-lat").val(lat);
                         $("#des-lon").val(lng);
@@ -171,6 +174,7 @@
                             strokeOpacity: 0.8,
                             strokeWeight: 4
                         });
+                         map.setCenter(lat, lng);
                         $("#btnSaveSegment").removeAttr('disabled');
                         console.log("Segment -- " + origin + "---" + destin);
 
@@ -211,6 +215,7 @@
                     $("#tbl-segments tbody tr.placeholder").remove();
                 }
                 $("#tbl-segments tbody").append("<tr><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
+                tblRowCount++;
                 $("#btnSaveSegment").attr("disabled", "disabled");
                 $(".wr-map").addClass("no-action");
                 $(".secondary-actions").hide();
@@ -232,13 +237,17 @@
             });
         });
 
-var currentRow;
+
 
         $(document).ready(function() {
 
 
               $('#contextmenu a#delete').on('click',function(e) {
                 currentRow.remove();
+                tblRowCount--;
+                  if (tblRowCount < 1) {
+                      $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
+                  }
               });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
