@@ -249,6 +249,18 @@
                       $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
                   }
               });
+            
+            
+            $('#contextmenu a#edit').on('click',function(e) {
+                var $tds = currentRow.find("td");
+                var editRow = '';
+                $.each($tds, function() {
+                    
+                    editRow += $(this).text() + "---";
+                    console.log(editRow);
+                });
+                
+              });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
                 currentRow = $(this);
