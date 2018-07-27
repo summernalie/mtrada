@@ -93,9 +93,7 @@
                                 <div class="wr-map no-action">
                                     <div id="map"></div>
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -353,6 +351,8 @@
                 }
                 points.push(end);
                 
+                console.log(points);
+                
                 var segment = {
                     name: start.id + " - " + end.id,
                     origin: start.id,
@@ -380,8 +380,17 @@
 
 
             $('#contextmenu a#delete').on('click', function(e) {
+               //debugger;
+                
+                
+                var deleteOrigin = segments[selectedRow].origin;
+                var deleteDestin = segments[selectedRow].destination;
                 
                 segments.splice(selectedRow, 1);
+                
+                cleanPoints(deleteOrigin);
+                cleanPoints(deleteDestin);
+               
                 generateGrid();
 //                selectedRow.remove();
 //                tblRowCount--;
@@ -397,17 +406,14 @@
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
                 selectedRow = $(this).data('index');
-//                selectedRowData = {
-//                    ind: selectedRow.find("td.index"),
-//                    lat: selectedRow.find("td.origin"),
-//                    long: selectedRow.find("td.destin")
-//                };
+                
+                console.log(segments[0]);
+
                 console.log(selectedRow);
                 var delay = 0;
                 if ($('#contextmenu').hasClass('show')) delay = 100;
                 e.preventDefault();
                 $('#contextmenu').removeClass('show');
-                // $('#contextmenu').addClass('');
 
                 setTimeout(function() {
                     $('#contextmenu').css('top', e.clientY);
@@ -466,10 +472,32 @@
             //tblRowCount++;
         }
         
+        
+        
         function getPointId() {
-            var pointsLength = points.length + 1;
-            var id = "M" + pointsLength;
+            if (points && points.length > 0) {
+            var latestId = +points[points.length - 1].id.replace('M', '');
+            
+            var id = "M" + ++latestId;
             return id;
+            }
+            else {
+                return "M1";
+            }
+        }
+        
+        function cleanPoints(point) {
+            var pointExists = segments.find(function(element) {
+              return element.id === point;
+            });
+
+            if (!pointExists) {
+                var p1 = points.findIndex(function(element) {
+                  return element.id === point;
+                });
+                points.splice(p1, 1);
+            }
+            
         }
 
     </script>
