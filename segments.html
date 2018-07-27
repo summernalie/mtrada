@@ -304,7 +304,7 @@
                         });
                         map.setCenter(myLat, myLng);
                         $("#btnSaveSegment").removeAttr('disabled');
-                        console.log("Segment -- " + origin + "---" + destin);
+                        
 
                     }
 
@@ -380,8 +380,6 @@
 
 
             $('#contextmenu a#delete').on('click', function(e) {
-               //debugger;
-                
                 
                 var deleteOrigin = segments[selectedRow].origin;
                 var deleteDestin = segments[selectedRow].destination;
@@ -392,16 +390,107 @@
                 cleanPoints(deleteDestin);
                
                 generateGrid();
-//                selectedRow.remove();
-//                tblRowCount--;
-//                if (tblRowCount < 1) {
-//                    $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
-//                }
+
             });
 
 
             $('#contextmenu a#edit').on('click', function(e) {
-
+                var editOrigin = segments[selectedRow].origin;
+                var editDestin = segments[selectedRow].destination;
+                
+               
+                
+                var p1 = points.find(function(element) {
+                  return element.id === editOrigin;
+                });
+                
+                var p2 = points.find(function(element) {
+                  return element.id === editDestin;
+                });
+                
+                 console.log(p1.location[0]);
+                console.log(p2.location[0]);
+                
+                makeMapEditable();
+                origin = p1.location;
+                destin = p2.location;
+                map.addMarker({
+                    lat: p1.location[0],
+                    lng: p1.location[1],
+                    draggable: true,
+                    dragend: function(event) {
+                        var myLat = event.latLng.lat();
+                        var myLng = event.latLng.lng();
+                        origin = [myLat, myLng];
+                        map.cleanRoute();
+                        map.drawRoute({
+                            origin: origin,
+                            destination: destin,
+                            travelMode: 'driving',
+                            strokeColor: '#f0ab17',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 4
+                        });
+                        map.drawOverlay({
+                            lat: myLat,
+                            lng: myLng,
+                            content: '<div class="marker-label"> ' + p1.id + ' </div>'
+                        });
+                    },
+                    title: 'Origin'
+                });
+                map.drawOverlay({
+                    lat: p1.location[0],
+                    lng: p1.location[1],
+                    content: '<div class="marker-label"> ' + p1.id + ' </div>'
+                });
+                map.addMarker({
+                    lat: p2.location[0],
+                    lng: p2.location[1],
+                    draggable: true,
+                    dragend: function(event) {
+                        var myLat = event.latLng.lat();
+                        var myLng = event.latLng.lng();
+                        destin = [myLat, myLng];
+                        map.cleanRoute();
+                        map.drawRoute({
+                            origin: origin,
+                            destination: destin,
+                            travelMode: 'driving',
+                            strokeColor: '#f0ab17',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 4
+                        });
+                        map.drawOverlay({
+                            lat: myLat,
+                            lng: myLng,
+                            content: '<div class="marker-label"> ' + p2.id + ' </div>'
+                        });
+                    },
+                    title: 'Destination'
+                });
+                map.drawOverlay({
+                    lat: p2.location[0],
+                    lng: p2.location[1],
+                    content: '<div class="marker-label"> ' + p2.id + ' </div>'
+                });
+                map.drawRoute({
+                    origin: origin,
+                    destination: destin,
+                    travelMode: 'driving',
+                    strokeColor: '#f0ab17',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 4
+                });
+                $("#btnSaveSegment").removeAttr('disabled');
+                map.setCenter(p2.location[0], p2.location[1]);
+                
+                //segments.splice(selectedRow, 1);
+                
+                //cleanPoints(deleteOrigin);
+                //cleanPoints(deleteDestin);
+               
+                generateGrid();
             });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
@@ -492,9 +581,9 @@
             });
 
             if (!pointExists) {
-                var p1 = points.findIndex(function(element) {
-                  return element.id === point;
-                });
+                    var p1 = points.findIndex(function(element) {
+                      return element.id === point;
+                    });
                 points.splice(p1, 1);
             }
             
