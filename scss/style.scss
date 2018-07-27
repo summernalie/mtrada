@@ -3,7 +3,6 @@ $primary: #466aab;
 $secondary: #f0ab17;
 $header-bg: #efefef;
 $error: #87411f;
-
 @mixin shadow($property) {
     -webkit-box-shadow: $property;
     -moz-box-shadow: $property;
@@ -195,6 +194,7 @@ header {
 }
 
 /* Segment */
+
 #tbl-segments {
     thead {
         th {
@@ -260,99 +260,184 @@ header {
     background: silver;
     margin-top: 20px;
 }
-
-
 #contextmenu {
-  position:fixed;
-  left:40%;
-  top:20%;
-  background-color:#fafafa;
-  padding:4pt;
-  font-size:10pt;
-  z-index:1000;
-  box-shadow:0 0 12pt rgba(0,0,0,0.25);
-  border-radius:4pt;
-  padding:0.5em 0 0.5em 0;
-  display:block;
+    position: fixed;
+    left: 40%;
+    top: 20%;
+    background-color: #fafafa;
+    padding: 4pt;
+    font-size: 10pt;
+    z-index: 1000;
+    box-shadow: 0 0 12pt rgba(0, 0, 0, 0.25);
+    border-radius: 4pt;
+    padding: 0.5em 0 0.5em 0;
+    display: block;
 }
-
-
 #contextmenu hr {
-  border:none;
-  border-bottom:1px solid #eee;
+    border: none;
+    border-bottom: 1px solid #eee;
 }
-
 #contextmenu a {
-  display:block;
-  text-decoration:none;
-  color:#333;
-  padding: 0.5em 2em 0.5em 0.75em;
-  max-width:18em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 0.5em 2em 0.5em 0.75em;
+    max-width: 18em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #contextmenu a:hover {
-  background-color:#333;
-  color:#fff;
+    background-color: #333;
+    color: #fff;
 }
-
-
 #contextmenu a::before {
-  content:'';
-  float:left;
-  margin-right:0.75em;
-  width:0.5em;
-  height:1em;
-  display:inline-block;
+    content: '';
+    float: left;
+    margin-right: 0.75em;
+    width: 0.5em;
+    height: 1em;
+    display: inline-block;
 }
-
 #contextmenu a.ticked::before {
-  content:'\2713';
+    content: '\2713';
 }
 #contextmenu a.unticked::before {
-  content:'\2610';
+    content: '\2610';
 }
-
 #contextmenu.fade {
     z-index: -1;
 }
-
 #contextmenu.fade.show {
     z-index: 9;
 }
 
-
 /* Animatinons */
-@-webkit-keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1.0;}
-} 
 
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1.0;
+    }
+}
 @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1.0;}
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1.0;
+    }
 }
 @-webkit-keyframes fadeOut {
-    from {opacity: 1.0;}
-    to {opacity: 0.0;}
-} 
-
-@keyframes fadeOut {
-    from {opacity: 1.0;}
-    to {opacity: 0.0;}
+    from {
+        opacity: 1.0;
+    }
+    to {
+        opacity: 0.0;
+    }
 }
-
+@keyframes fadeOut {
+    from {
+        opacity: 1.0;
+    }
+    to {
+        opacity: 0.0;
+    }
+}
 .is-fadingIn {
-  -webkit-animation: fadeIn 0.1s ease-out;
-  animation: fadeIn 0.1s ease-out;
-  opacity:1.0;
-  display:block;
+    -webkit-animation: fadeIn 0.1s ease-out;
+    animation: fadeIn 0.1s ease-out;
+    opacity: 1.0;
+    display: block;
 }
 .is-fadingOut {
-  -webkit-animation: fadeOut 0.1s ease-out;
-  animation: fadeOut 0.1s ease-out;
-  opacity:0.0;
-  display:block;
+    -webkit-animation: fadeOut 0.1s ease-out;
+    animation: fadeOut 0.1s ease-out;
+    opacity: 0.0;
+    display: block;
 }
+.bs-wizard {
+    border-bottom: solid 1px #e0e0e0;
+    padding: 0 0 10px 0;
+    > .bs-wizard-step {
+        padding: 0;
+        position: relative;
+        .bs-wizard-stepnum {
+            color: #595959;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .bs-wizard-info {
+            color: #999;
+            font-size: 14px;
+        }
+        > .bs-wizard-dot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            display: block;
+            background: lighten($secondary, 25%);
+            top: 45px;
+            left: 50%;
+            margin-top: -15px;
+            margin-left: -15px;
+            border-radius: 50%;
+            &:after {
+                content: ' ';
+                width: 14px;
+                height: 14px;
+                background: $secondary;
+                border-radius: 50px;
+                position: absolute;
+                top: 8px;
+                left: 8px;
+            }
+        }
+        .progress {
+            position: relative;
+            border-radius: 0px;
+            height: 8px;
+            box-shadow: none;
+            margin: 20px 0;
+            > .progress-bar {
+                width: 0px;
+                box-shadow: none;
+                background: lighten($secondary, 25%);
+            }
+        }
+        &.complete > .progress > .progress-bar {
+            width: 100%;
+        }
+        &.active > .progress > .progress-bar {
+            width: 50%;
+        }
+        &:first-child.active > .progress > .progress-bar {
+            width: 0%;
+        }
+        &:last-child.active > .progress > .progress-bar {
+            width: 100%;
+        }
+        &.disabled  {
+            > .bs-wizard-dot {
+                background-color: #f5f5f5;
+                &:after {
+                    opacity: 0;
+                }
+            }
+            a.bs-wizard-dot {
+                pointer-events: none;
+            }
+        }
+        &:first-child > .progress {
+            left: 50%;
+            width: 50%;
+        }
+        &:last-child > .progress {
+            width: 50%;
+        }
+    }
+}
+
 

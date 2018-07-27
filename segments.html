@@ -44,6 +44,37 @@
 
     <div class="main-content">
         <div class="container">
+
+            <div class="row bs-wizard" style="border-bottom:0;">
+
+                <div class="col-4 bs-wizard-step complete">
+                    <div class="text-center bs-wizard-stepnum">Step 1</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="col-4 bs-wizard-step active">
+                    <!-- complete -->
+                    <div class="text-center bs-wizard-stepnum">Step 2</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="col-4 bs-wizard-step disabled">
+                    <!-- complete -->
+                    <div class="text-center bs-wizard-stepnum">Step 3</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="bs-wizard-dot"></a>
+                </div>
+
+            </div>
+
             <h1 class="page-title">Mark Segments</h1>
 
             <section>
@@ -113,13 +144,69 @@
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript" src="libs/gmaps/gmaps.js"></script>
     <script type="text/javascript">
+        
+        // https://tc39.github.io/ecma262/#sec-array.prototype.find
+        if (!Array.prototype.find) {
+          Object.defineProperty(Array.prototype, 'find', {
+            value: function(predicate) {
+             // 1. Let O be ? ToObject(this value).
+              if (this == null) {
+                throw new TypeError('"this" is null or not defined');
+              }
+
+              var o = Object(this);
+
+              // 2. Let len be ? ToLength(? Get(O, "length")).
+              var len = o.length >>> 0;
+
+              // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+              if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+              }
+
+              // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+              var thisArg = arguments[1];
+
+              // 5. Let k be 0.
+              var k = 0;
+
+              // 6. Repeat, while k < len
+              while (k < len) {
+                // a. Let Pk be ! ToString(k).
+                // b. Let kValue be ? Get(O, Pk).
+                // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                // d. If testResult is true, return kValue.
+                var kValue = o[k];
+                if (predicate.call(thisArg, kValue, k, o)) {
+                  return kValue;
+                }
+                // e. Increase k by 1.
+                k++;
+              }
+
+              // 7. Return undefined.
+              return undefined;
+            },
+            configurable: true,
+            writable: true
+          });
+        }
+        
+        
         var map;
         var origin = null,
             destin = null,
             segment = 2;
         var tblRowCount = 0;
-        var currentRow;
+        var selectedRow, selectedRowData;
         var segmentIndex = 0;
+        
+        
+        var points= [];
+        var segments = [];
+        
+        
+        
         $(document).ready(function() {
             map = new GMaps({
                 el: '#map',
@@ -129,41 +216,84 @@
 
             GMaps.on('click', map.map, function(event) {
                 var index = map.markers.length;
-                var lat = event.latLng.lat();
-                var lng = event.latLng.lng();
+                var myLat = event.latLng.lat();
+                var myLng = event.latLng.lng();
 
                 if (segment < 2) {
                     console.log(segment);
                     if (origin === null && destin === null && segment < 1) {
 
-                        $("#ori-lat").val(lat);
-                        $("#ori-lon").val(lng);
-                        origin = [lat, lng];
+                        $("#ori-lat").val(myLat);
+                        $("#ori-lon").val(myLng);
+                        origin = [myLat, myLng];
 
                         segment = 1;
                         map.addMarker({
-                            lat: lat,
-                            lng: lng,
+                            lat: myLat,
+                            lng: myLng,
+                            draggable: true,
+                            dragend: function(event) {
+                                myLat = event.latLng.lat();
+                                myLng = event.latLng.lng();
+                                origin = [myLat, myLng];
+                                //map.removeOverlays();
+                                map.cleanRoute();
+                                map.drawOverlay({
+                                    lat: myLat,
+                                    lng: myLng,
+                                    content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                                });
+                                map.drawRoute({
+                                    origin: origin,
+                                    destination: destin,
+                                    travelMode: 'driving',
+                                    strokeColor: '#f0ab17',
+                                    strokeOpacity: 0.8,
+                                    strokeWeight: 4
+                                });
+                            },
                             title: 'Origin'
                         });
                         map.drawOverlay({
-                            lat: lat,
-                            lng: lng,
+                            lat: myLat,
+                            lng: myLng,
                             content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
-                        map.setCenter(lat, lng);
+                        map.setCenter(myLat, myLng);
+                        
                     } else if (origin != null && destin === null && segment == 1) {
-                        $("#des-lat").val(lat);
-                        $("#des-lon").val(lng);
-                        destin = [lat, lng];
+                        $("#des-lat").val(myLat);
+                        $("#des-lon").val(myLng);
+                        destin = [myLat, myLng];
                         map.addMarker({
-                            lat: lat,
-                            lng: lng,
+                            lat: myLat,
+                            lng: myLng,
+                            draggable: true,
+                            dragend: function(event) {
+                                myLat = event.latLng.lat();
+                                myLng = event.latLng.lng();
+                                destin = [myLat, myLng];
+                                //map.removeOverlays();
+                                map.cleanRoute();
+                                map.drawOverlay({
+                                    lat: myLat,
+                                    lng: myLng,
+                                    content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
+                                });
+                                map.drawRoute({
+                                    origin: origin,
+                                    destination: destin,
+                                    travelMode: 'driving',
+                                    strokeColor: '#f0ab17',
+                                    strokeOpacity: 0.8,
+                                    strokeWeight: 4
+                                });
+                            },
                             title: 'Destination'
                         });
                         map.drawOverlay({
-                            lat: lat,
-                            lng: lng,
+                            lat: myLat,
+                            lng: myLng,
                             content: '<div class="marker-label"> ' + segmentIndex + ' </div>'
                         });
                         map.drawRoute({
@@ -174,7 +304,7 @@
                             strokeOpacity: 0.8,
                             strokeWeight: 4
                         });
-                         map.setCenter(lat, lng);
+                        map.setCenter(myLat, myLng);
                         $("#btnSaveSegment").removeAttr('disabled');
                         console.log("Segment -- " + origin + "---" + destin);
 
@@ -196,29 +326,42 @@
                 }]
             });
 
+
+
             $("#btnAddSegment").click(function() {
                 segmentIndex++;
                 segment = 0;
                 origin = null;
                 destin = null;
 
-                $(".secondary-actions").show();
-                $(".wr-map.no-action").removeClass("no-action");
+                makeMapEditable();
                 $("#tbl-segments tr.table-active").removeClass("table-active");
-                $("#btnAddSegment").attr("disabled", "disabled");
+
             });
 
             $("#btnSaveSegment").click(function() {
-                var formatOrigin = origin.join(', ');
-                var formatDestin = destin.join(', ');
-                if ($("#tbl-segments tbody tr.placeholder").length) {
-                    $("#tbl-segments tbody tr.placeholder").remove();
+                
+                var start = {
+                    id: getPointId(),
+                    location: origin
                 }
-                $("#tbl-segments tbody").append("<tr><td>" + segmentIndex + "</td><td>" + formatOrigin + "</td><td>" + formatDestin + "</td></tr>");
-                tblRowCount++;
-                $("#btnSaveSegment").attr("disabled", "disabled");
-                $(".wr-map").addClass("no-action");
-                $(".secondary-actions").hide();
+                points.push(start);
+                
+                var end = {
+                    id: getPointId(),
+                    location: destin
+                }
+                points.push(end);
+                
+                var segment = {
+                    name: start.id + " - " + end.id,
+                    origin: start.id,
+                    destination: end.id
+                }
+                segments.push(segment);
+                generateGrid();
+                
+                makeMapDisabled();
                 map.removeMarkers();
                 map.removeOverlays();
                 map.cleanRoute();
@@ -227,48 +370,39 @@
 
 
             $("#btnCancelSegment").click(function() {
-                $(".wr-map").addClass("no-action");
-                $(".secondary-actions").hide();
+                makeMapDisabled();
                 segmentIndex--;
                 map.removeMarkers();
                 map.removeOverlays();
                 map.cleanRoute();
                 $("#btnAddSegment").removeAttr('disabled');
             });
-        });
 
 
-
-        $(document).ready(function() {
-
-
-              $('#contextmenu a#delete').on('click',function(e) {
-                currentRow.remove();
-                tblRowCount--;
-                  if (tblRowCount < 1) {
-                      $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
-                  }
-              });
-            
-            
-            $('#contextmenu a#edit').on('click',function(e) {
-                var $tds = currentRow.find("td");
-                var editRow = {
-                    ind: '',
-                    lat: '',
-                    long: ''
-                };
-                $.each($tds, function() {
-                    
-                    editRow += $(this).text() + "---";
-                    console.log(editRow);
-                });
+            $('#contextmenu a#delete').on('click', function(e) {
                 
-              });
+                segments.splice(selectedRow, 1);
+                generateGrid();
+//                selectedRow.remove();
+//                tblRowCount--;
+//                if (tblRowCount < 1) {
+//                    $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
+//                }
+            });
+
+
+            $('#contextmenu a#edit').on('click', function(e) {
+
+            });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
-                currentRow = $(this);
-                console.log(currentRow);
+                selectedRow = $(this).data('index');
+//                selectedRowData = {
+//                    ind: selectedRow.find("td.index"),
+//                    lat: selectedRow.find("td.origin"),
+//                    long: selectedRow.find("td.destin")
+//                };
+                console.log(selectedRow);
                 var delay = 0;
                 if ($('#contextmenu').hasClass('show')) delay = 100;
                 e.preventDefault();
@@ -289,6 +423,54 @@
             });
 
         });
+
+        function makeMapEditable() {
+            $(".secondary-actions").show();
+            $(".wr-map.no-action").removeClass("no-action");
+            $("#btnAddSegment").attr("disabled", "disabled");
+        }
+
+        function makeMapDisabled() {
+            $("#btnSaveSegment").attr("disabled", "disabled");
+            $(".wr-map").addClass("no-action");
+            $(".secondary-actions").hide();
+        }
+        
+        function generateGrid() {
+            if (segments.length > 0) {
+                if ($("#tbl-segments tbody tr.placeholder").length) {
+                    $("#tbl-segments tbody tr.placeholder").remove();
+                }
+                var tblHtml = '';
+                for (i=0; i<segments.length; i++) {
+                    var segment = segments[i];
+                    
+                    var p1 = points.find(function(element) {
+                      return element.id === segment.origin;
+                    });
+                    var p2 = points.find(function(element) {
+                      return element.id === segment.destination;
+                    });
+                    
+                    var formatOrigin = p1.location.join(', ');
+                    var formatDestin = p2.location.join(', ');
+                    tblHtml += "<tr data-index='" + i + "'><td class='index'>" + segment.name + "</td><td class='origin'>" + formatOrigin + "</td><td class='destin'>" + formatDestin + "</td></tr>";
+                   
+                }
+                $("#tbl-segments tbody").html(tblHtml);
+            }
+            else {
+                $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
+            }
+            
+            //tblRowCount++;
+        }
+        
+        function getPointId() {
+            var pointsLength = points.length + 1;
+            var id = "M" + pointsLength;
+            return id;
+        }
 
     </script>
 </body>
