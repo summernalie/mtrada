@@ -85,7 +85,7 @@
                                 <button class="btn btn-add btn-secondary btn-add" id="btnAddSegment"><i class="fa fa-plus"></i>Add New</button>
                                 <div class="secondary-actions float-right" style="display: none">
                                     <button class="btn btn-primary btn-add" id="btnSaveSegment" disabled="disabled">Save</button>
-                                    <button class="btn btn-primary btn-add" id="btnUpdateSegment">Update</button>
+                                    <button class="btn btn-primary btn-add d-none" id="btnUpdateSegment">Update</button>
                                     <button class="btn btn-cancel btn-add" id="btnCancelSegment">Cancel</button>
                                 </div>
                             </div>
@@ -299,7 +299,7 @@
             });
             
             $("#btnUpdateSegment").click(function() {
-                //console.log(segments[selectedRow].name);
+                
                 var p1 = points.findIndex(function(element) {
                   return element.id === segments[selectedRow].origin;
                 });
@@ -330,6 +330,8 @@
                 generateGrid();
                 
                 makeMapDisabled();
+                $("#btnSaveSegment").removeClass('d-none');
+                $("#btnUpdateSegment").addClass('d-none');
                 map.removeMarkers();
                 map.removeOverlays();
                 map.cleanRoute();
@@ -360,6 +362,9 @@
             });
 
             $('#contextmenu a#edit').on('click', function(e) {
+                $("#btnSaveSegment").addClass('d-none');
+                $("#btnUpdateSegment").removeClass('d-none');
+                
                 var editOrigin = segments[selectedRow].origin;
                 var editDestin = segments[selectedRow].destination;
                
@@ -379,7 +384,7 @@
                 markMap(p2.location[0], p2.location[1], 'Destination', false);
                 markOverlays(p1.id, p2.id);
                 markRoute(origin, destin);
-                $("#btnSaveSegment").removeAttr('disabled');
+                
                 map.setCenter(p2.location[0], p2.location[1]);               
                 
             });
