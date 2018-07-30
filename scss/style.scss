@@ -220,6 +220,18 @@ header {
             vertical-align: middle;
             &:first-child {
                 text-align: center;
+                white-space: nowrap;
+            }
+        }
+        tr {
+            &.table-active {
+                background: lighten($secondary, 40%);
+                td {
+                    border-right-color: darken($secondary, 10%);
+                    &.destin {
+                        border-right-color: #dee2e6;
+                    }
+                }
             }
         }
     }

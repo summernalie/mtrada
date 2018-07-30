@@ -86,6 +86,7 @@
                                 <div class="secondary-actions float-right" style="display: none">
                                     <button class="btn btn-primary btn-add" id="btnSaveSegment" disabled="disabled">Save</button>
                                     <button class="btn btn-primary btn-add d-none" id="btnUpdateSegment">Update</button>
+                                    <button class="btn btn-primary btn-add d-none" id="btnDuplicateSegment">Save</button>
                                     <button class="btn btn-cancel btn-add" id="btnCancelSegment">Cancel</button>
                                 </div>
                             </div>
@@ -119,7 +120,7 @@
                             <a href="">Add point from Origin</a>
                             <a href="">Add point from Destination</a>
                             <a id="duplicate">Duplicate</a>
-                            <a href="">Duplicate and invert OD</a>
+                            <a id="duplicate-invert">Duplicate and invert OD</a>
                         </div>
                     </div>
                 </div>
@@ -263,10 +264,7 @@
                 segment = 0;
                 origin = null;
                 destin = null;
-
                 makeMapEditable();
-                $("#tbl-segments tr.table-active").removeClass("table-active");
-
             });
 
             $("#btnSaveSegment").click(function() {
@@ -335,6 +333,46 @@
                 map.removeMarkers();
                 map.removeOverlays();
                 map.cleanRoute();
+                $("#btnAddSegment").removeAttr('disabled');
+            });
+            
+            
+            $("#btnDuplicateSegment").click(function() {
+                
+                var p1 = points.findIndex(function(element) {
+                  return element.id === segments[selectedRow].destination;
+                });
+                
+                var p2 = points.findIndex(function(element) {
+                  return element.id === segments[selectedRow].origin;
+                });
+                
+                var start = {
+                    id: segments[selectedRow].destination,
+                    location: origin
+                }
+                points[p1] = start;
+                
+                var end = {
+                    id: segments[selectedRow].origin,
+                    location: destin
+                }
+                points[p2] = end;
+                
+                var segment = {
+                    name: start.id + " - " + end.id,
+                    origin: start.id,
+                    destination: end.id
+                }
+                segments.push(segment);
+                generateGrid();
+                
+                makeMapDisabled();
+                map.removeMarkers();
+                map.removeOverlays();
+                map.cleanRoute();
+                $("#btnSaveSegment").removeClass('d-none');
+                $("#btnDuplicateSegment").addClass('d-none');
                 $("#btnAddSegment").removeAttr('disabled');
             });
 
@@ -418,9 +456,41 @@
                 map.setCenter(p2.location[0], p2.location[1]);               
                 
             });
+            
+            $('#contextmenu a#duplicate-invert').on('click', function(e) {
+                var p1 = points.findIndex(function(element) {
+                  return element.id === segments[selectedRow].destination;
+                });
+                
+                var p2 = points.findIndex(function(element) {
+                  return element.id === segments[selectedRow].origin;
+                });
+                
+                var start = {
+                    id: segments[selectedRow].destination,
+                    location: origin
+                }
+                points[p1] = start;
+                
+                var end = {
+                    id: segments[selectedRow].origin,
+                    location: destin
+                }
+                points[p2] = end;
+                
+                var segment = {
+                    name: start.id + " - " + end.id,
+                    origin: start.id,
+                    destination: end.id
+                }
+                segments.push(segment);
+                generateGrid();              
+                
+            });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
                 selectedRow = $(this).data('index');
+                $(this).addClass("table-active");
                 var delay = 0;
                 if ($('#contextmenu').hasClass('show')) delay = 100;
                 e.preventDefault();
@@ -435,6 +505,7 @@
             });
             $(document).on("click", function(e) {
                 $('#contextmenu').removeClass('show');
+                $('#tbl-segments tr.table-active').removeClass("table-active");
             });
 
         });
@@ -478,7 +549,6 @@
                 $("#tbl-segments tbody").html('<tr class="placeholder"><td colspan="3">No segments defined</td></tr>');
             }
             
-            //tblRowCount++;
         }        
         
         function getPointId() {
