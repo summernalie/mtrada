@@ -117,8 +117,8 @@
                         <div id="contextmenu" class="fade">
                             <a id="edit">Edit</a>
                             <a id="delete">Delete</a>
-                            <a href="">Add point from Origin</a>
-                            <a href="">Add point from Destination</a>
+                            <a id="fromOrigin">Add point from Origin</a>
+                            <a id="fromDestin">Add point from Destination</a>
                             <a id="duplicate">Duplicate</a>
                             <a id="duplicate-invert">Duplicate and invert OD</a>
                         </div>
@@ -195,7 +195,10 @@
         var map;
         var origin = null,
             destin = null,
-            segment = 2;
+            segment = 2,
+            labelOne = null,
+            labelTwo = null;
+        var originExists = false, destinExists = false;
         var tblRowCount = 0;
         var selectedRow, selectedRowData;
         var segmentIndex = 0;
@@ -217,7 +220,7 @@
                 var index = map.markers.length;
                 var myLat = event.latLng.lat();
                 var myLng = event.latLng.lng();
-
+                
                 if (segment < 2) {
                     if (origin === null && destin === null && segment < 1) {
 
@@ -226,18 +229,27 @@
                         origin = [myLat, myLng];
                         segment = 1;
                         markMap(myLat, myLng, 'Origin', true, true);
-                        markOverlays(getPointId());
+                        labelOne = getPointId();
+                        markOverlays(labelOne);
                         
                     } else if (origin != null && destin === null && segment == 1) {
                         $("#des-lat").val(myLat);
                         $("#des-lon").val(myLng);
                         destin = [myLat, myLng];
-                        
+                        var label1, label2;
                         markMap(myLat, myLng, 'Destination', false, true);
-                        var label1 = getPointId();
-                        var label2 = label1.replace('M', '');
-                        label2 = "M" + ++label2;
-                        markOverlays(label1, label2);
+                        
+                            label2 = getPointId().replace('M', '');
+                        
+                        
+                        if (!originExists) {
+                            labelTwo = "M" + ++label2;
+                        }
+                        else {
+                            labelTwo = "M" + label2;
+                        }
+                        
+                        markOverlays(labelOne, labelTwo);
                         markRoute(origin, destin);
                          $("#btnSaveSegment").removeAttr('disabled');
 
@@ -268,18 +280,50 @@
             });
 
             $("#btnSaveSegment").click(function() {
-                
-                var start = {
-                    id: getPointId(),
-                    location: origin
+                var start, end;
+                if (!originExists) {
+                    start = {
+                        id: getPointId(),
+                        location: origin
+                    }
+                    points.push(start);
+
+                    end = {
+                        id: getPointId(),
+                        location: destin
+                    }
+                    points.push(end);
                 }
-                points.push(start);
-                
-                var end = {
-                    id: getPointId(),
-                    location: destin
+                else {
+                    var p1;
+                    if (!destinExists) {
+                        p1 = points.findIndex(function(element) {
+                          return element.id === segments[selectedRow].origin;
+                        });
+                        start = {
+                            id: segments[selectedRow].origin,
+                            location: origin
+                        }
+                    }
+                    else {
+                        p1 = points.findIndex(function(element) {
+                          return element.id === segments[selectedRow].destination;
+                        });
+                        start = {
+                            id: segments[selectedRow].destination,
+                            location: origin
+                        }
+                    }
+                    
+                    points[p1] = start;
+                    
+                    end = {
+                        id: getPointId(),
+                        location: destin
+                    }
+                    points.push(end);
                 }
-                points.push(end);
+                
                 
                 var segment = {
                     name: start.id + " - " + end.id,
@@ -487,6 +531,48 @@
                 generateGrid();              
                 
             });
+            
+            
+            $('#contextmenu a#fromOrigin').on('click', function(e) {
+                
+                var editOrigin = segments[selectedRow].origin;
+                var p1 = points.find(function(element) {
+                  return element.id === editOrigin;
+                });
+                                 
+                makeMapEditable();
+                origin = p1.location;
+                destin = null;
+                segment = 1;
+                
+                markMap(p1.location[0], p1.location[1], 'Origin', true);
+                labelOne = p1.id;
+                markOverlays(labelOne);                
+                map.setCenter(p1.location[0], p1.location[1]);             
+                originExists = true;
+            });
+            
+            
+            $('#contextmenu a#fromDestin').on('click', function(e) {
+                
+                var editOrigin = segments[selectedRow].destination;
+               
+                var p1 = points.find(function(element) {
+                  return element.id === editOrigin;
+                });
+                                 
+                makeMapEditable();
+                origin = p1.location;
+                destin = null;
+                segment = 1;
+                
+                markMap(p1.location[0], p1.location[1], 'Origin', true);
+                labelOne = p1.id;
+                markOverlays(labelOne);                
+                map.setCenter(p1.location[0], p1.location[1]);             
+                originExists = true;
+                destinExists = true;
+            });
 
             $(document).on("contextmenu", "#tbl-segments tr", function(e) {
                 selectedRow = $(this).data('index');
@@ -520,6 +606,8 @@
             $("#btnSaveSegment").attr("disabled", "disabled");
             $(".wr-map").addClass("no-action");
             $(".secondary-actions").hide();
+            originExists = false;
+            destinExists = false;
         }
         
         function generateGrid() {
