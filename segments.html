@@ -114,6 +114,9 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="text-right">
+                            <button class="btn btn-primary" id="save-segments">Save Segments</button>
+                        </div>
                         <div id="contextmenu" class="fade">
                             <a id="edit">Edit</a>
                             <a id="delete">Delete</a>
@@ -271,6 +274,13 @@
                 }]
             });
 
+            
+            $("#save-segments").click(function() {
+                var myPoints = JSON.stringify(points);
+                var mySegments = JSON.stringify(segments);
+                console.log(myPoints);
+                console.log(mySegments);
+            });
             $("#btnAddSegment").click(function() {
                 segmentIndex++;
                 segment = 0;
@@ -339,6 +349,7 @@
                 map.cleanRoute();
                 $("#btnAddSegment").removeAttr('disabled');
             });
+            
             
             $("#btnUpdateSegment").click(function() {
                 

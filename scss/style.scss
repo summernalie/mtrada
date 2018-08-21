@@ -269,7 +269,9 @@ header {
 .marker-label {
     height: 20px;
     padding: 5px 10px;
-    background: silver;
+    background: #fff;
+    font-weight: 500;
+    color: #333;
     margin-top: 20px;
 }
 #contextmenu {
@@ -453,3 +455,20 @@ header {
 }
 
 
+.data-count {
+    background: #efefef;
+    .card-body {
+        > div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+    p {
+        margin: 0;
+        font-size: 14px;
+        label {
+            font-weight: 800;
+        }
+    }
+}
