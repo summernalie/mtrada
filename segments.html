@@ -398,6 +398,8 @@
             
             $("#btnDuplicateSegment").click(function() {
                 
+                
+                
                 var p1 = points.findIndex(function(element) {
                   return element.id === segments[selectedRow].destination;
                 });
@@ -450,6 +452,7 @@
                 var deleteDestin = segments[selectedRow].destination;
                 
                 segments.splice(selectedRow, 1);
+                
                 
                 cleanPoints(deleteOrigin);
                 cleanPoints(deleteDestin);
@@ -517,6 +520,7 @@
             });
             
             $('#contextmenu a#duplicate-invert').on('click', function(e) {
+               
                 var p1 = points.findIndex(function(element) {
                   return element.id === segments[selectedRow].destination;
                 });
@@ -542,8 +546,19 @@
                     origin: start.id,
                     destination: end.id
                 }
-                segments.push(segment);
-                generateGrid();              
+                
+                var segmentFound = segments.find(function(element) {
+                  return element.name === segment.name;
+                });
+                console.log(segmentFound);
+                if (!segmentFound) {
+                    segments.push(segment);
+                    generateGrid(); 
+                }
+                else {
+                    alert("Segment already exists!");
+                }
+                    
                 
             });
             
@@ -640,6 +655,7 @@
                     var p2 = points.find(function(element) {
                       return element.id === segment.destination;
                     });
+                    //console.log(p1 + "and" + p2);
                     
                     var formatOrigin = p1.location.join(', ');
                     var formatDestin = p2.location.join(', ');
@@ -667,9 +683,8 @@
         
         function cleanPoints(point) {
             var pointExists = segments.find(function(element) {
-              return element.id === point;
+              return element.origin === point || element.destination === point;
             });
-
             if (!pointExists) {
                     var p1 = points.findIndex(function(element) {
                       return element.id === point;
@@ -679,6 +694,7 @@
             
         }
         
+       
         function markMap(lat, lon, title, isOrigin, isAdd){
             map.addMarker({
                 lat: lat,

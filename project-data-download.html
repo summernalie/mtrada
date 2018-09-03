@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>M-Trada</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="libs/datepicker/bootstrap-datepicker.min.css">
+</head>
+
+<body class="app">
+    <header>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="#">
+                    <img src="img/logo.png" /> M-Trada
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Projects</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Username
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">My Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+
+            <div class="clearfix">
+                <h1 class="page-title float-left">Select Data - <span>Project 1</span></h1>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Segment
+                                    </label>
+                                    <select class="custom-select">
+                                        <option>M1-M2</option>
+                                        <option>M1-M3</option>
+                                        <option>M5-M6</option>
+                                        <option>M3-M4</option>
+                                        <option>M1-M5</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Year
+                                    </label>
+                                    <div class="input-group date yearpicker" data-provide="datepicker">
+                                        <input type="text" class="form-control">
+                                        <div class="input-group-addon">
+                                            <span class="glyphicon glyphicon-th"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Month
+                                    </label>
+                                    <div class="input-group date monthpicker" data-provide="datepicker">
+                                        <input type="text" class="form-control">
+                                        <div class="input-group-addon">
+                                            <span class="glyphicon glyphicon-th"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Daterange
+                                    </label>
+                                    <div class="input-group input-daterange">
+                                        <div class="input-group-append">
+                                        <input type="text" class="form-control" value="">
+                                        <div class="input-group-text">to</div>
+                                       
+                                        <input type="text" class="form-control" value="">
+                                             </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Time Interval
+                                    </label>
+                                    <select class="custom-select">
+                                        <option>00</option>
+                                        <option>10</option>
+                                        <option>16</option>
+                                        <option>23</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Select Minute
+                                    </label>
+                                    <select class="custom-select">
+                                        <option>00</option>
+                                        <option>15</option>
+                                        <option>27</option>
+                                        <option>59</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mt-4 text-right">
+                        <button class="btn btn-secondary btn-next">Go to Data Visualizer <i class="fa fa-angle-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <h2 class="sub-title mt-4">Data Collection Logger</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered tbl-custom">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Hour</th>
+                      <th scope="col">Datarows</th>
+                      <th scope="col">Total Datarows</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>02/01/2018</td>
+                      <td class="text-center">0500</td>
+                      <td class="text-right">34</td>
+                      <td class="text-right">3004</td>
+                    </tr>
+                   <tr>
+                      <td>02/01/2018</td>
+                      <td class="text-center">0500</td>
+                      <td class="text-right">34</td>
+                      <td class="text-right">3004</td>
+                    </tr>
+                      <tr>
+                      <td>02/01/2018</td>
+                      <td class="text-center">0500</td>
+                      <td class="text-right">34</td>
+                      <td class="text-right">3004</td>
+                    </tr>
+                      <tr>
+                      <td>02/01/2018</td>
+                      <td class="text-center" class="text-center">0500</td>
+                      <td class="text-right">34</td>
+                      <td class="text-right">3004</td>
+                    </tr>
+                      <tr>
+                      <td>02/01/2018</td>
+                      <td class="text-center">0500</td>
+                      <td class="text-right">34</td>
+                      <td class="text-right">3004</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; UOW 2018</p>
+        </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="libs/datepicker/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.yearpicker').datepicker({
+                format: 'yyyy',
+                minViewMode: 2,
+                maxViewMode: 2
+            });
+            $('.monthpicker').datepicker({
+                format: 'mm',
+                minViewMode: 1,
+                maxViewMode: 1
+            });
+            $('.rangepicker').datepicker({
+                format: 'dd-mm-yyyy',
+                minViewMode: 1,
+                maxViewMode: 1
+            });
+            $('.input-daterange input').each(function() {
+                $(this).datepicker('clearDates');
+            });
+        });
+
+    </script>
+</body>
+
+</html>
